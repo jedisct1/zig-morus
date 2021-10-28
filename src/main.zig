@@ -139,7 +139,11 @@ pub const Morus = struct {
             mem.readIntLittle(u64, c[24..32]),
         };
         var self = Morus{ .s = State{ v0, v1, v2, v3, v4 } };
-        self.update([4]u64{ 0, 0, 0, 0 });
+        var i: usize = 0;
+        const zero = [4]u64{ 0, 0, 0, 0 };
+        while (i < 16) : (i += 1) {
+            self.update(zero);
+        }
         self.s[1][0] ^= k0;
         self.s[1][1] ^= k1;
         self.s[1][2] ^= k0;
@@ -313,11 +317,13 @@ test "morus" {
     var c: [m.len]u8 = undefined;
     var m2: [m.len]u8 = undefined;
     var expected_tag: [Morus.tag_length]u8 = undefined;
-    _ = try fmt.hexToBytes(&expected_tag, "75901036716518827f0b69a7e3ca8871");
+    _ = try fmt.hexToBytes(&expected_tag, "fe0bf3ea600b0355eb535ddd35320e1b");
     var expected_c: [m.len]u8 = undefined;
-    _ = try fmt.hexToBytes(&expected_c, "09909ae80cef75b7e4b06fba1f9638b53a37c81dd643e0b1451691509e621d80b54cc09568872a79aa4072affc5894bf3f00a1d6bd0397cb5a03592aa9a57e3dd67c3a69adb0ea139738c2261268c972b3e6dcd66d381f1a5124ae4c3baa9ca37409a575fd6cd4e5822b58b2628257a5757d");
+    _ = try fmt.hexToBytes(&expected_c, "712ae984433ceea0448a6a4f35afd46b42f42d69316e42aa54264dfd8951293b6ed676c9a813e7f42745e6210de9c82c4ac67fde57695c2d1e1f2f302682f118c6895915de8fa63de1bb798c7a178ce3290dfe3527c370a4c65be01ca55b7abb26b573ade9076cbf9b8c06acc750470a4524");
     var tag: [16]u8 = undefined;
     Morus.encrypt(&c, &tag, m, ad, iv, k);
+    try testing.expectEqualSlices(u8, &expected_tag, &tag);
+    try testing.expectEqualSlices(u8, &expected_c, &c);
     try Morus.decrypt(&m2, &c, tag, ad, iv, k);
     try testing.expectEqualSlices(u8, m, &m2);
 }
