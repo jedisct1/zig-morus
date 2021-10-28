@@ -5,13 +5,14 @@ const mem = std.mem;
 const rotl = std.math.rotl;
 const AesBlock = std.crypto.core.aes.Block;
 const AuthenticationError = std.crypto.errors.AuthenticationError;
+const Lane = std.meta.Vector(4, u64);
 
 pub const Morus = struct {
     pub const tag_length = 16;
     pub const nonce_length = 16;
     pub const key_length = 16;
 
-    const State = [5][4]u64;
+    const State = [5]Lane;
 
     s: State align(32),
 
@@ -43,8 +44,12 @@ pub const Morus = struct {
         s[1][1] ^= s[4][1];
         s[1][2] ^= s[4][2];
         s[1][3] ^= s[4][3];
-        mem.swap(u64, &s[4][3], &s[4][1]);
-        mem.swap(u64, &s[4][2], &s[4][0]);
+        t = s[4][3];
+        s[4][3] = s[4][1];
+        s[4][1] = t;
+        t = s[4][2];
+        s[4][2] = s[4][0];
+        s[4][0] = t;
         s[1][0] ^= s[2][0] & s[3][0];
         s[1][1] ^= s[2][1] & s[3][1];
         s[1][2] ^= s[2][2] & s[3][2];
@@ -84,8 +89,12 @@ pub const Morus = struct {
         s[3][1] ^= s[1][1];
         s[3][2] ^= s[1][2];
         s[3][3] ^= s[1][3];
-        mem.swap(u64, &s[1][3], &s[1][1]);
-        mem.swap(u64, &s[1][2], &s[1][0]);
+        t = s[1][3];
+        s[1][3] = s[1][1];
+        s[1][1] = t;
+        t = s[1][2];
+        s[1][2] = s[1][0];
+        s[1][0] = t;
         s[3][0] ^= s[4][0] & s[0][0];
         s[3][1] ^= s[4][1] & s[0][1];
         s[3][2] ^= s[4][2] & s[0][2];
