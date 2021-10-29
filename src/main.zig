@@ -79,7 +79,7 @@ pub const Morus = struct {
         while (i < 16) : (i += 1) {
             self.update(zero);
         }
-        self.s[1] ^= Lane{ k0, k1, k0, k1 };
+        self.s[1] ^= v1;
         return self;
     }
 
