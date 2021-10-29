@@ -91,12 +91,7 @@ pub const Morus = struct {
             mem.readIntLittle(u64, xi[24..32]),
         };
         const s = self.s;
-        const c = Lane{
-            p[0] ^ s[0][0] ^ s[1][1] ^ (s[2][0] & s[3][0]),
-            p[1] ^ s[0][1] ^ s[1][2] ^ (s[2][1] & s[3][1]),
-            p[2] ^ s[0][2] ^ s[1][3] ^ (s[2][2] & s[3][2]),
-            p[3] ^ s[0][3] ^ s[1][0] ^ (s[2][3] & s[3][3]),
-        };
+        const c = p ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         var ci: [32]u8 = undefined;
         mem.writeIntLittle(u64, ci[0..8], c[0]);
         mem.writeIntLittle(u64, ci[8..16], c[1]);
@@ -114,12 +109,7 @@ pub const Morus = struct {
             mem.readIntLittle(u64, ci[24..32]),
         };
         const s = self.s;
-        const p = Lane{
-            c[0] ^ s[0][0] ^ s[1][1] ^ (s[2][0] & s[3][0]),
-            c[1] ^ s[0][1] ^ s[1][2] ^ (s[2][1] & s[3][1]),
-            c[2] ^ s[0][2] ^ s[1][3] ^ (s[2][2] & s[3][2]),
-            c[3] ^ s[0][3] ^ s[1][0] ^ (s[2][3] & s[3][3]),
-        };
+        const p = c ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         var xi: [32]u8 = undefined;
         mem.writeIntLittle(u64, xi[0..8], p[0]);
         mem.writeIntLittle(u64, xi[8..16], p[1]);
@@ -139,12 +129,7 @@ pub const Morus = struct {
             mem.readIntLittle(u64, pad[24..32]),
         };
         const s = self.s;
-        var p = Lane{
-            c[0] ^ s[0][0] ^ s[1][1] ^ (s[2][0] & s[3][0]),
-            c[1] ^ s[0][1] ^ s[1][2] ^ (s[2][1] & s[3][1]),
-            c[2] ^ s[0][2] ^ s[1][3] ^ (s[2][2] & s[3][2]),
-            c[3] ^ s[0][3] ^ s[1][0] ^ (s[2][3] & s[3][3]),
-        };
+        var p = c ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         mem.writeIntLittle(u64, pad[0..8], p[0]);
         mem.writeIntLittle(u64, pad[8..16], p[1]);
         mem.writeIntLittle(u64, pad[16..24], p[2]);
