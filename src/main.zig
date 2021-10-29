@@ -110,7 +110,7 @@ pub const Morus = struct {
         return xi;
     }
 
-    fn decLast(self: *Morus, xn: []u8, cn: []const u8) void {
+    fn decPartial(self: *Morus, xn: []u8, cn: []const u8) void {
         var pad = [_]u8{0} ** 32;
         mem.copy(u8, pad[0..cn.len], cn);
         const c = Lane{
@@ -198,7 +198,7 @@ pub const Morus = struct {
             mem.copy(u8, m[i..][0..32], &morus.dec(c[i..][0..32]));
         }
         if (c.len % 32 != 0) {
-            morus.decLast(m[i..], c[i..]);
+            morus.decPartial(m[i..], c[i..]);
         }
 
         const expected_tag = morus.finalize(ad.len, m.len);
