@@ -7,6 +7,15 @@ MORUS is a fast authenticated cipher for platforms without hardware AES accelera
 
 It performs especially well on WebAssembly compared to alternatives.
 
+Its performance is comparable to AES-OCB, without using AES instructions.
+
+Benchmark results on x86_64 (Macbook Pro, 2,4 GHz Core i9, single core):
+
+```text
+            morus:       5890 MiB/s
+       aes128-ocb:       5824 MiB/s
+```
+
 Benchmark results for WebAssembly (WAVM)
 
 ```text
