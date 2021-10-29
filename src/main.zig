@@ -18,36 +18,27 @@ pub const Morus = struct {
 
     fn update(self: *Morus, input: Lane) void {
         const s = &self.s;
-        s[0] = s[0] ^ s[3];
-        s[0] = s[0] ^ (s[1] & s[2]);
+        s[0] ^= s[3] ^ (s[1] & s[2]);
         s[0] = rotl(Lane, s[0], 13);
         var t = Lane{ s[3][3], s[3][0], s[3][1], s[3][2] };
         s[3] = t;
 
-        s[1] = s[1] ^ input;
-        s[1] = s[1] ^ s[4];
-        s[1] = s[1] ^ (s[2] & s[3]);
+        s[1] ^= input ^ s[4] ^ (s[2] & s[3]);
         s[1] = rotl(Lane, s[1], 46);
         t = Lane{ s[4][2], s[4][3], s[4][0], s[4][1] };
         s[4] = t;
 
-        s[2] = s[2] ^ input;
-        s[2] = s[2] ^ s[0];
-        s[2] = s[2] ^ (s[3] & s[4]);
+        s[2] ^= input ^ s[0] ^ (s[3] & s[4]);
         s[2] = rotl(Lane, s[2], 38);
         t = Lane{ s[0][1], s[0][2], s[0][3], s[0][0] };
         s[0] = t;
 
-        s[3] = s[3] ^ input;
-        s[3] = s[3] ^ s[1];
-        s[3] = s[3] ^ (s[4] & s[0]);
+        s[3] ^= input ^ s[1] ^ (s[4] & s[0]);
         s[3] = rotl(Lane, s[3], 7);
         t = Lane{ s[1][2], s[1][3], s[1][0], s[1][1] };
         s[1] = t;
 
-        s[4] = s[4] ^ input;
-        s[4] = s[4] ^ s[2];
-        s[4] = s[4] ^ (s[0] & s[1]);
+        s[4] ^= input ^ s[2] ^ (s[0] & s[1]);
         s[4] = rotl(Lane, s[4], 4);
         t = Lane{ s[2][3], s[2][0], s[2][1], s[2][2] };
         s[2] = t;
@@ -119,7 +110,7 @@ pub const Morus = struct {
         return xi;
     }
 
-    fn decLast(self: *Morus, xn: []u8, cn: []const u8) void {
+    fn decPartial(self: *Morus, xn: []u8, cn: []const u8) void {
         var pad = [_]u8{0} ** 32;
         mem.copy(u8, pad[0..cn.len], cn);
         const c = Lane{
@@ -207,7 +198,7 @@ pub const Morus = struct {
             mem.copy(u8, m[i..][0..32], &morus.dec(c[i..][0..32]));
         }
         if (c.len % 32 != 0) {
-            morus.decLast(m[i..], c[i..]);
+            morus.decPartial(m[i..], c[i..]);
         }
 
         const expected_tag = morus.finalize(ad.len, m.len);
