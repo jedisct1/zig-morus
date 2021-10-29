@@ -27,6 +27,17 @@ Benchmark results for WebAssembly (WAVM)
             morus:       3505 MiB/s
 ```
 
+MORUS is the fastest cipher on Raspberry Pi 4, and possibly other ARM devices without crypto extensions:
+
+```text
+       aes128-gcm:         41 MiB/s
+       aes128-ocb:         81 MiB/s
+ xchacha8Poly1305:        159 MiB/s
+       aegis-128l:        168 MiB/s
+            rocca:        221 MiB/s
+            morus:        713 MiB/s
+```
+
 On platforms with AES acceleration, [AEGIS](https://jedisct1.github.io/draft-aegis-aead/draft-denis-aegis-aead.html)(available in the standard library as `std.crypto.aead.aegis.Aegis128L`) and [ROCCA](https://github.com/jedisct1/zig-rocca) have higher performance.
 
 Warning: MORUS doesn't provide 128-bit confidentiality even though [the best know attacks](https://eprint.iacr.org/2019/172.pdf) are impractical.
