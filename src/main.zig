@@ -65,8 +65,8 @@ pub const Morus = struct {
         const iv1 = mem.readIntLittle(u64, iv[8..16]);
         const v0 = Lane{ iv0, iv1, 0, 0 };
         const v1 = Lane{ k0, k1, k0, k1 };
-        const v2 = Lane{ ~@as(u64, 0), ~@as(u64, 0), ~@as(u64, 0), ~@as(u64, 0) };
-        const v3 = Lane{ 0, 0, 0, 0 };
+        const v2 = @splat(4, ~@as(u64, 0));
+        const v3 = @splat(4, @as(u64, 0));
         const v4 = Lane{
             mem.readIntLittle(u64, c[0..8]),
             mem.readIntLittle(u64, c[8..16]),
@@ -75,7 +75,7 @@ pub const Morus = struct {
         };
         var self = Morus{ .s = State{ v0, v1, v2, v3, v4 } };
         var i: usize = 0;
-        const zero = [4]u64{ 0, 0, 0, 0 };
+        const zero = @splat(4, @as(u64, 0));
         while (i < 16) : (i += 1) {
             self.update(zero);
         }
