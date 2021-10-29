@@ -15,6 +15,6 @@ Benchmark results for WebAssembly (WAVM)
  xchacha8Poly1305:        319 MiB/s
        aegis-128l:        807 MiB/s
             rocca:        854 MiB/s
-            morus:       2271 MiB/s
+            morus:       3505 MiB/s
 ```
 
