@@ -40,4 +40,14 @@ MORUS is the fastest cipher on Raspberry Pi 4, and possibly other ARM devices wi
 
 On platforms with AES acceleration, [AEGIS](https://jedisct1.github.io/draft-aegis-aead/draft-denis-aegis-aead.html)(available in the standard library as `std.crypto.aead.aegis.Aegis128L`) and [ROCCA](https://github.com/jedisct1/zig-rocca) have higher performance.
 
+Benchmark on Rocket Lake (Xeon E-2386G):
+
+```text
+       aes128-ocb:      10173 MiB/s
+       aes256-ocb:       7792 MiB/s
+            morus:      11069 MiB/s
+            rocca:      16274 MiB/s
+       aegis-128l:      21206 MiB/s (170 Gb/s)
+```
+
 Warning: MORUS doesn't provide 128-bit confidentiality even though [the best know attacks](https://eprint.iacr.org/2019/172.pdf) are impractical.
