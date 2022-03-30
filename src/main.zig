@@ -5,7 +5,7 @@ const mem = std.mem;
 const rotl = std.math.rotl;
 const AesBlock = std.crypto.core.aes.Block;
 const AuthenticationError = std.crypto.errors.AuthenticationError;
-const Lane = std.meta.Vector(4, u64);
+const Lane = @Vector(4, u64);
 
 pub const Morus = struct {
     pub const tag_length = 16;
