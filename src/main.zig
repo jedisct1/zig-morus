@@ -112,7 +112,7 @@ pub const Morus = struct {
 
     fn decPartial(self: *Morus, xn: []u8, cn: []const u8) void {
         var pad = [_]u8{0} ** 32;
-        mem.copy(u8, pad[0..cn.len], cn);
+        @memcpy(pad[0..cn.len], cn);
         const c = Lane{
             mem.readIntLittle(u64, pad[0..8]),
             mem.readIntLittle(u64, pad[8..16]),
@@ -125,8 +125,8 @@ pub const Morus = struct {
         mem.writeIntLittle(u64, pad[8..16], p[1]);
         mem.writeIntLittle(u64, pad[16..24], p[2]);
         mem.writeIntLittle(u64, pad[24..32], p[3]);
-        mem.set(u8, pad[cn.len..], 0);
-        mem.copy(u8, xn, pad[0..cn.len]);
+        @memset(pad[cn.len..], 0);
+        @memcpy(xn, pad[0..cn.len]);
         p = Lane{
             mem.readIntLittle(u64, pad[0..8]),
             mem.readIntLittle(u64, pad[8..16]),
@@ -137,7 +137,7 @@ pub const Morus = struct {
     }
 
     fn finalize(self: *Morus, adlen: usize, mlen: usize) [16]u8 {
-        const t = [4]u64{ @intCast(u64, adlen) * 8, @intCast(u64, mlen) * 8, 0, 0 };
+        const t = [4]u64{ @as(u64, @intCast(adlen)) * 8, @as(u64, @intCast(mlen)) * 8, 0, 0 };
         var s = &self.s;
         s[4] ^= s[0];
         var i: usize = 0;
@@ -162,18 +162,18 @@ pub const Morus = struct {
         }
         if (ad.len % 32 != 0) {
             var pad = [_]u8{0} ** 32;
-            mem.copy(u8, pad[0 .. ad.len % 32], ad[i..]);
+            @memcpy(pad[0 .. ad.len % 32], ad[i..]);
             _ = morus.enc(&pad);
         }
 
         i = 0;
         while (i + 32 <= m.len) : (i += 32) {
-            mem.copy(u8, c[i..][0..32], &morus.enc(m[i..][0..32]));
+            @memcpy(c[i..][0..32], &morus.enc(m[i..][0..32]));
         }
         if (m.len % 32 != 0) {
             var pad = [_]u8{0} ** 32;
-            mem.copy(u8, pad[0 .. m.len % 32], m[i..]);
-            mem.copy(u8, c[i..], morus.enc(&pad)[0 .. m.len % 32]);
+            @memcpy(pad[0 .. m.len % 32], m[i..]);
+            @memcpy(c[i..], morus.enc(&pad)[0 .. m.len % 32]);
         }
 
         tag.* = morus.finalize(ad.len, m.len);
@@ -189,13 +189,13 @@ pub const Morus = struct {
         }
         if (ad.len % 32 != 0) {
             var pad = [_]u8{0} ** 32;
-            mem.copy(u8, pad[0 .. ad.len % 32], ad[i..]);
+            @memcpy(pad[0 .. ad.len % 32], ad[i..]);
             _ = morus.enc(&pad);
         }
 
         i = 0;
         while (i + 32 <= c.len) : (i += 32) {
-            mem.copy(u8, m[i..][0..32], &morus.dec(c[i..][0..32]));
+            @memcpy(m[i..][0..32], &morus.dec(c[i..][0..32]));
         }
         if (c.len % 32 != 0) {
             morus.decPartial(m[i..], c[i..]);
