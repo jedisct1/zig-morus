@@ -56,8 +56,8 @@ pub const Morus = struct {
         const iv1 = mem.readIntLittle(u64, iv[8..16]);
         const v0 = Lane{ iv0, iv1, 0, 0 };
         const v1 = Lane{ k0, k1, k0, k1 };
-        const v2 = @splat(4, ~@as(u64, 0));
-        const v3 = @splat(4, @as(u64, 0));
+        const v2: Lane = @splat(~@as(u64, 0));
+        const v3: Lane = @splat(@as(u64, 0));
         const v4 = Lane{
             mem.readIntLittle(u64, c[0..8]),
             mem.readIntLittle(u64, c[8..16]),
@@ -66,7 +66,7 @@ pub const Morus = struct {
         };
         var self = Morus{ .s = State{ v0, v1, v2, v3, v4 } };
         var i: usize = 0;
-        const zero = @splat(4, @as(u64, 0));
+        const zero: Lane = @splat(0);
         while (i < 16) : (i += 1) {
             self.update(zero);
         }
@@ -215,7 +215,7 @@ test "morus" {
     const k = "YELLOW SUBMARINE".*;
     const iv = [_]u8{0} ** 16;
     const ad = "Comment numero un";
-    var m = "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.";
+    const m = "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.";
     var c: [m.len]u8 = undefined;
     var m2: [m.len]u8 = undefined;
     var expected_tag: [Morus.tag_length]u8 = undefined;
