@@ -50,19 +50,19 @@ pub const Morus = struct {
             0x79, 0x62, 0xdb, 0x3d, 0x18, 0x55, 0x6d, 0xc2, 0x2f, 0xf1, 0x20, 0x11, 0x31, 0x42,
             0x73, 0xb5, 0x28, 0xdd,
         };
-        const k0 = mem.readIntLittle(u64, k[0..8]);
-        const k1 = mem.readIntLittle(u64, k[8..16]);
-        const iv0 = mem.readIntLittle(u64, iv[0..8]);
-        const iv1 = mem.readIntLittle(u64, iv[8..16]);
+        const k0 = mem.readInt(u64, k[0..8], .little);
+        const k1 = mem.readInt(u64, k[8..16], .little);
+        const iv0 = mem.readInt(u64, iv[0..8], .little);
+        const iv1 = mem.readInt(u64, iv[8..16], .little);
         const v0 = Lane{ iv0, iv1, 0, 0 };
         const v1 = Lane{ k0, k1, k0, k1 };
         const v2: Lane = @splat(~@as(u64, 0));
         const v3: Lane = @splat(@as(u64, 0));
         const v4 = Lane{
-            mem.readIntLittle(u64, c[0..8]),
-            mem.readIntLittle(u64, c[8..16]),
-            mem.readIntLittle(u64, c[16..24]),
-            mem.readIntLittle(u64, c[24..32]),
+            mem.readInt(u64, c[0..8], .little),
+            mem.readInt(u64, c[8..16], .little),
+            mem.readInt(u64, c[16..24], .little),
+            mem.readInt(u64, c[24..32], .little),
         };
         var self = Morus{ .s = State{ v0, v1, v2, v3, v4 } };
         var i: usize = 0;
@@ -76,36 +76,36 @@ pub const Morus = struct {
 
     fn enc(self: *Morus, xi: *const [32]u8) [32]u8 {
         const p = Lane{
-            mem.readIntLittle(u64, xi[0..8]),
-            mem.readIntLittle(u64, xi[8..16]),
-            mem.readIntLittle(u64, xi[16..24]),
-            mem.readIntLittle(u64, xi[24..32]),
+            mem.readInt(u64, xi[0..8], .little),
+            mem.readInt(u64, xi[8..16], .little),
+            mem.readInt(u64, xi[16..24], .little),
+            mem.readInt(u64, xi[24..32], .little),
         };
         const s = self.s;
         const c = p ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         var ci: [32]u8 = undefined;
-        mem.writeIntLittle(u64, ci[0..8], c[0]);
-        mem.writeIntLittle(u64, ci[8..16], c[1]);
-        mem.writeIntLittle(u64, ci[16..24], c[2]);
-        mem.writeIntLittle(u64, ci[24..32], c[3]);
+        mem.writeInt(u64, ci[0..8], c[0], .little);
+        mem.writeInt(u64, ci[8..16], c[1], .little);
+        mem.writeInt(u64, ci[16..24], c[2], .little);
+        mem.writeInt(u64, ci[24..32], c[3], .little);
         self.update(p);
         return ci;
     }
 
     fn dec(self: *Morus, ci: *const [32]u8) [32]u8 {
         const c = Lane{
-            mem.readIntLittle(u64, ci[0..8]),
-            mem.readIntLittle(u64, ci[8..16]),
-            mem.readIntLittle(u64, ci[16..24]),
-            mem.readIntLittle(u64, ci[24..32]),
+            mem.readInt(u64, ci[0..8], .little),
+            mem.readInt(u64, ci[8..16], .little),
+            mem.readInt(u64, ci[16..24], .little),
+            mem.readInt(u64, ci[24..32], .little),
         };
         const s = self.s;
         const p = c ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         var xi: [32]u8 = undefined;
-        mem.writeIntLittle(u64, xi[0..8], p[0]);
-        mem.writeIntLittle(u64, xi[8..16], p[1]);
-        mem.writeIntLittle(u64, xi[16..24], p[2]);
-        mem.writeIntLittle(u64, xi[24..32], p[3]);
+        mem.writeInt(u64, xi[0..8], p[0], .little);
+        mem.writeInt(u64, xi[8..16], p[1], .little);
+        mem.writeInt(u64, xi[16..24], p[2], .little);
+        mem.writeInt(u64, xi[24..32], p[3], .little);
         self.update(p);
         return xi;
     }
@@ -114,24 +114,24 @@ pub const Morus = struct {
         var pad = [_]u8{0} ** 32;
         @memcpy(pad[0..cn.len], cn);
         const c = Lane{
-            mem.readIntLittle(u64, pad[0..8]),
-            mem.readIntLittle(u64, pad[8..16]),
-            mem.readIntLittle(u64, pad[16..24]),
-            mem.readIntLittle(u64, pad[24..32]),
+            mem.readInt(u64, pad[0..8], .little),
+            mem.readInt(u64, pad[8..16], .little),
+            mem.readInt(u64, pad[16..24], .little),
+            mem.readInt(u64, pad[24..32], .little),
         };
         const s = self.s;
         var p = c ^ s[0] ^ Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
-        mem.writeIntLittle(u64, pad[0..8], p[0]);
-        mem.writeIntLittle(u64, pad[8..16], p[1]);
-        mem.writeIntLittle(u64, pad[16..24], p[2]);
-        mem.writeIntLittle(u64, pad[24..32], p[3]);
+        mem.writeInt(u64, pad[0..8], p[0], .little);
+        mem.writeInt(u64, pad[8..16], p[1], .little);
+        mem.writeInt(u64, pad[16..24], p[2], .little);
+        mem.writeInt(u64, pad[24..32], p[3], .little);
         @memset(pad[cn.len..], 0);
         @memcpy(xn, pad[0..cn.len]);
         p = Lane{
-            mem.readIntLittle(u64, pad[0..8]),
-            mem.readIntLittle(u64, pad[8..16]),
-            mem.readIntLittle(u64, pad[16..24]),
-            mem.readIntLittle(u64, pad[24..32]),
+            mem.readInt(u64, pad[0..8], .little),
+            mem.readInt(u64, pad[8..16], .little),
+            mem.readInt(u64, pad[16..24], .little),
+            mem.readInt(u64, pad[24..32], .little),
         };
         self.update(p);
     }
@@ -147,8 +147,8 @@ pub const Morus = struct {
         s = &self.s;
         s[0] ^= Lane{ s[1][1], s[1][2], s[1][3], s[1][0] } ^ (s[2] & s[3]);
         var tag: [16]u8 = undefined;
-        mem.writeIntLittle(u64, tag[0..8], s[0][0]);
-        mem.writeIntLittle(u64, tag[8..16], s[0][1]);
+        mem.writeInt(u64, tag[0..8], s[0][0], .little);
+        mem.writeInt(u64, tag[8..16], s[0][1], .little);
         return tag;
     }
 
@@ -202,7 +202,7 @@ pub const Morus = struct {
         }
 
         const expected_tag = morus.finalize(ad.len, m.len);
-        if (!crypto.utils.timingSafeEql([expected_tag.len]u8, expected_tag, tag)) {
+        if (!crypto.timing_safe.eql([expected_tag.len]u8, expected_tag, tag)) {
             return error.AuthenticationFailed;
         }
     }
