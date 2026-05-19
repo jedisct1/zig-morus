@@ -111,7 +111,7 @@ pub const Morus = struct {
     }
 
     fn decPartial(self: *Morus, xn: []u8, cn: []const u8) void {
-        var pad = [_]u8{0} ** 32;
+        var pad = @as([32]u8, @splat(0));
         @memcpy(pad[0..cn.len], cn);
         const c = Lane{
             mem.readInt(u64, pad[0..8], .little),
@@ -161,7 +161,7 @@ pub const Morus = struct {
             _ = morus.enc(ad[i..][0..32]);
         }
         if (ad.len % 32 != 0) {
-            var pad = [_]u8{0} ** 32;
+            var pad = @as([32]u8, @splat(0));
             @memcpy(pad[0 .. ad.len % 32], ad[i..]);
             _ = morus.enc(&pad);
         }
@@ -171,7 +171,7 @@ pub const Morus = struct {
             @memcpy(c[i..][0..32], &morus.enc(m[i..][0..32]));
         }
         if (m.len % 32 != 0) {
-            var pad = [_]u8{0} ** 32;
+            var pad = @as([32]u8, @splat(0));
             @memcpy(pad[0 .. m.len % 32], m[i..]);
             @memcpy(c[i..], morus.enc(&pad)[0 .. m.len % 32]);
         }
@@ -188,7 +188,7 @@ pub const Morus = struct {
             _ = morus.enc(ad[i..][0..32]);
         }
         if (ad.len % 32 != 0) {
-            var pad = [_]u8{0} ** 32;
+            var pad = @as([32]u8, @splat(0));
             @memcpy(pad[0 .. ad.len % 32], ad[i..]);
             _ = morus.enc(&pad);
         }
@@ -213,7 +213,7 @@ const fmt = std.fmt;
 
 test "morus" {
     const k = "YELLOW SUBMARINE".*;
-    const iv = [_]u8{0} ** 16;
+    const iv = @as([16]u8, @splat(0));
     const ad = "Comment numero un";
     const m = "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.";
     var c: [m.len]u8 = undefined;
